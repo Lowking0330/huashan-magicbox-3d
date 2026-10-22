@@ -612,6 +612,87 @@
             color: #3b1d0e;
         }
 
+        /* Top bar right group for BGM + Cover buttons */
+        .top-bar-right {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .top-Floating-btn.bgm-active {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.28), rgba(5, 150, 105, 0.42));
+            border-color: rgba(52, 211, 153, 0.7);
+            color: #ecfdf5;
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.3);
+        }
+        .invite-card.theme-light .top-Floating-btn.bgm-active {
+            background: linear-gradient(135deg, #10b981, #059669);
+            border-color: #047857;
+            color: #ffffff;
+        }
+        .bgm-note-icon {
+            display: inline-block;
+            animation: noteBounce 0.8s ease-in-out infinite alternate;
+        }
+        @keyframes noteBounce {
+            from { transform: translateY(0) rotate(-8deg); }
+            to { transform: translateY(-2px) rotate(10deg); }
+        }
+
+        /* Fullscreen Seamless 3D Map Modal (keeps BGM playing uninterrupted!) */
+        .map3d-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: #0d081d;
+            display: none;
+            flex-direction: column;
+        }
+        .map3d-modal.open {
+            display: flex;
+            animation: fadeInModal 0.3s ease forwards;
+        }
+        @keyframes fadeInModal {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .map3d-topbar {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            right: 12px;
+            z-index: 10001;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            pointer-events: none;
+        }
+        .map3d-pill-btn {
+            pointer-events: auto;
+            background: rgba(15, 23, 42, 0.88);
+            color: #fef08a;
+            border: 1.5px solid #fbbf24;
+            padding: 8px 15px;
+            border-radius: 999px;
+            font-size: 0.84rem;
+            font-weight: 900;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.55);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: transform 0.15s ease;
+        }
+        .map3d-pill-btn:hover {
+            transform: scale(1.04);
+        }
+        .map3d-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            flex: 1;
+        }
+
         @media (max-width: 390px) {
             .hero-banner { padding: 12px; gap: 10px; }
             .mascot-stage { width: 92px; height: 90px; }
@@ -629,12 +710,17 @@
     <main class="invite-card" id="inviteCard">
         <div class="card-top-ribbon"></div>
 
-        <!-- Top Controls: Theme Switcher + Cover Return -->
+        <!-- Top Controls: Theme Switcher + BGM Toggle + Cover Return -->
         <div class="top-bar-controls">
             <button class="top-Floating-btn" id="themeToggleBtn" onclick="toggleCardTheme()" title="切換深淺色質感主題">
                 ☀️ 切換：晨曦童萌風
             </button>
-            
+            <div class="top-bar-right">
+                <button class="top-Floating-btn" id="bgmToggleBtn" onclick="toggleCheerfulBGM()" title="開關輕快童趣背景音樂">
+                    <span>🎵 童趣配樂</span>
+                </button>
+                
+            </div>
         </div>
 
         
@@ -735,7 +821,7 @@
 
         <!-- 6. Action Buttons -->
         <section class="cta-section">
-            <a class="btn-3d-map" href="./huashan-magicbox-3d.html">
+            <a class="btn-3d-map" id="map3dLink" href="./huashan-magicbox-3d.html" onclick="open3DMapOverlay(event)">
                 <span>🗺️ 開啟 3D 場館動線導覽圖 ( 正門 ➜ Magic Box )</span>
             </a>
             <div class="secondary-btns">
@@ -749,7 +835,278 @@
         </section>
     </main>
 
+    <!-- Fullscreen 3D Map Overlay so BGM keeps playing seamlessly when entering the 3D Map -->
+    <div class="map3d-modal" id="map3dModal" aria-hidden="true">
+        <div class="map3d-topbar">
+            <button class="map3d-pill-btn" onclick="close3DMapOverlay()">
+                <span>⬅️ 返回電子邀請卡</span>
+            </button>
+            <button class="map3d-pill-btn" id="bgmModalBtn" onclick="toggleCheerfulBGM()">
+                <span>🎵 童趣配樂：播放中</span>
+            </button>
+        </div>
+        <iframe class="map3d-iframe" id="map3dIframe" title="華山 1914 東 3A 館 Magic Box 3D 導覽圖"></iframe>
+    </div>
+
     <script>
+        /* =========================================================
+           Cheerful Children's Animation BGM Synthesizer (44.1kHz Stereo WAV)
+           - Glockenspiel / Music Box Lead + Warm Marimba Chords + Bouncy Pizzicato Bass + Toy Shaker
+           - Plays via native HTML5 <audio loop> so it continues seamlessly even inside 3D WebGL view!
+           ========================================================= */
+        let bgmAudio = null;
+        let bgmPlaying = false;
+        let bgmUserMuted = false;
+
+        function midiToFreq(m) {
+            return 440 * Math.pow(2, (m - 69) / 12);
+        }
+
+        function buildCheerfulChildrenWavUrl() {
+            const sr = 44100;
+            const bpm = 120;
+            const beatSec = 60 / bpm; // 0.5s per beat
+            const totalBeats = 32;    // 8 bars = 16.0 seconds seamless loop
+            const duration = totalBeats * beatSec;
+            const numSamples = Math.floor(sr * duration);
+            const left = new Float32Array(numSamples);
+            const right = new Float32Array(numSamples);
+
+            // Helper: add a note with bell/celesta or marimba or pizzicato timbre
+            function addNote(startBeat, durBeats, midi, type, amp, pan) {
+                const startSample = Math.floor(startBeat * beatSec * sr);
+                const maxDurSec = Math.min(durBeats * beatSec * 1.35, 1.4);
+                const lenSamples = Math.floor(maxDurSec * sr);
+                const freq = midiToFreq(midi);
+                const lGain = amp * Math.cos((pan + 1) * Math.PI / 4);
+                const rGain = amp * Math.sin((pan + 1) * Math.PI / 4);
+
+                for (let i = 0; i < lenSamples; i++) {
+                    const idx = (startSample + i) % numSamples;
+                    const t = i / sr;
+                    let sig = 0;
+                    if (type === 'celesta') {
+                        // Crisp Glockenspiel / Music Box + warm fundamental
+                        const env = Math.min(1, t / 0.005) * Math.exp(-t * 4.2);
+                        const bellEnv = Math.exp(-t * 18.0);
+                        sig = (
+                            Math.sin(2 * Math.PI * freq * t) * 0.72 +
+                            Math.sin(2 * Math.PI * freq * 2 * t) * 0.20 +
+                            Math.sin(2 * Math.PI * freq * 4 * t) * 0.14 * bellEnv
+                        ) * env;
+                    } else if (type === 'marimba') {
+                        // Warm wooden marimba / ukulele chord tone
+                        const env = Math.min(1, t / 0.006) * Math.exp(-t * 7.5);
+                        sig = (
+                            Math.sin(2 * Math.PI * freq * t) * 0.80 +
+                            Math.sin(2 * Math.PI * freq * 2 * t) * 0.15 +
+                            Math.sin(2 * Math.PI * freq * 3 * t) * 0.05
+                        ) * env;
+                    } else if (type === 'bass') {
+                        // Bouncy acoustic pizzicato bass
+                        const env = Math.min(1, t / 0.008) * Math.exp(-t * 5.8);
+                        sig = (
+                            Math.sin(2 * Math.PI * freq * t) * 0.75 +
+                            Math.sin(2 * Math.PI * freq * 2 * t) * 0.25
+                        ) * env;
+                    } else if (type === 'woodblock') {
+                        const env = Math.min(1, t / 0.002) * Math.exp(-t * 42.0);
+                        const wbFreq = freq * (1 + 0.15 * Math.exp(-t * 60));
+                        sig = Math.sin(2 * Math.PI * wbFreq * t) * env;
+                    }
+                    left[idx] += sig * lGain;
+                    right[idx] += sig * rGain;
+                }
+            }
+
+            // 1. Sunny Playful Children's Melody (Celesta / Music Box + Octave Toy Piano)
+            // 8-bar cheerful theme in C Major (C5=72, D5=74, E5=76, F5=77, G5=79, A5=81, B5=83, C6=84)
+            const melody = [
+                // Bar 1 (C): C5 E5 G5 E5 + playful hop
+                [0.0, 0.5, 72], [0.5, 0.5, 74], [1.0, 0.75, 76], [1.75, 0.25, 79], [2.0, 1.0, 81], [3.0, 1.0, 79],
+                // Bar 2 (G/B -> Am7): E5 G5 D5
+                [4.0, 0.75, 76], [4.75, 0.25, 79], [5.0, 1.0, 74], [6.0, 1.5, 76], [7.5, 0.5, 72],
+                // Bar 3 (Fmaj7): F5 A5 C6 A5
+                [8.0, 0.75, 77], [8.75, 0.25, 79], [9.0, 1.0, 81], [10.0, 1.0, 84], [11.0, 1.0, 81],
+                // Bar 4 (G7): G5 E5 D5 G5
+                [12.0, 1.0, 79], [13.0, 0.5, 76], [13.5, 0.5, 77], [14.0, 1.5, 74], [15.5, 0.5, 79],
+                // Bar 5 (C -> C7): E5 G5 C6 B5 A5 G5
+                [16.0, 0.75, 76], [16.75, 0.25, 79], [17.0, 1.0, 84], [18.0, 0.5, 83], [18.5, 0.5, 81], [19.0, 1.0, 79],
+                // Bar 6 (Fmaj7 -> Dm7): A5 F5 D5 F5
+                [20.0, 0.75, 81], [20.75, 0.25, 79], [21.0, 1.0, 77], [22.0, 1.0, 74], [23.0, 1.0, 81],
+                // Bar 7 (C/G -> G7): G5 E5 C5 D5 E5 F5
+                [24.0, 1.0, 79], [25.0, 0.5, 76], [25.5, 0.5, 72], [26.0, 0.5, 74], [26.5, 0.5, 76], [27.0, 0.5, 77], [27.5, 0.5, 74],
+                // Bar 8 (C): C5 + sparkling glockenspiel run G5-A5-B5-C6
+                [28.0, 2.0, 72], [29.0, 0.5, 79], [29.5, 0.5, 81], [30.0, 0.5, 83], [30.5, 1.0, 84], [31.5, 0.5, 79]
+            ];
+
+            for (const [b, d, m] of melody) {
+                addNote(b, d, m, 'celesta', 0.26, -0.15);
+                addNote(b, d, m + 12, 'celesta', 0.09, 0.25); // sparkling upper octave
+            }
+
+            // 2. Bouncy Marimba Chords & Pizzicato Bass (8 bars)
+            const progression = [
+                // [barIndex, bassRoot, bassFifth, chordNotes]
+                [0, 48, 55, [60, 64, 67]],     // C
+                [1, 47, 55, [59, 62, 67]],     // G/B
+                [2, 41, 48, [60, 65, 69]],     // F
+                [3, 43, 50, [59, 62, 67]],     // G
+                [4, 48, 55, [60, 64, 67, 70]], // C7
+                [5, 41, 48, [60, 65, 69]],     // F
+                [6, 43, 50, [60, 64, 67]],     // C/G -> G7
+                [7, 48, 55, [60, 64, 67, 72]]  // C
+            ];
+
+            for (const [bar, root, fifth, chord] of progression) {
+                const base = bar * 4;
+                // Bouncy bass on beats 0, 1.5, 2, 3
+                addNote(base + 0.0, 0.8, root, 'bass', 0.28, 0.0);
+                addNote(base + 1.5, 0.4, fifth, 'bass', 0.16, 0.0);
+                addNote(base + 2.0, 0.8, fifth, 'bass', 0.25, 0.0);
+                addNote(base + 3.0, 0.8, root + 12, 'bass', 0.18, 0.0);
+
+                // Off-beat cheerful ukulele/marimba strums on beats 0.5, 1.5, 2.5, 3.5 + light arpeggio
+                for (const off of [0.5, 1.5, 2.5, 3.5]) {
+                    chord.forEach((n, idx) => {
+                        addNote(base + off + idx * 0.02, 0.4, n, 'marimba', 0.11, (idx % 2 === 0) ? -0.35 : 0.35);
+                    });
+                }
+
+                // Cute woodblock pops on syncopated beats
+                addNote(base + 1.0, 0.1, 80, 'woodblock', 0.09, -0.4);
+                addNote(base + 2.5, 0.1, 85, 'woodblock', 0.07, 0.4);
+                addNote(base + 3.0, 0.1, 80, 'woodblock', 0.09, -0.4);
+            }
+
+            // 3. Warm Stereo Echo / Hall Reverb (180ms L / 240ms R)
+            const delayL = Math.floor(0.18 * sr);
+            const delayR = Math.floor(0.24 * sr);
+            for (let i = 0; i < numSamples; i++) {
+                const dl = (i + delayL) % numSamples;
+                const dr = (i + delayR) % numSamples;
+                left[dl] += right[i] * 0.18;
+                right[dr] += left[i] * 0.18;
+            }
+
+            // Encode 16-bit Stereo WAV Blob
+            const wavBuffer = new ArrayBuffer(44 + numSamples * 4);
+            const view = new DataView(wavBuffer);
+            const writeStr = (offset, str) => {
+                for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i));
+            };
+            writeStr(0, 'RIFF');
+            view.setUint32(4, 36 + numSamples * 4, true);
+            writeStr(8, 'WAVE');
+            writeStr(12, 'fmt ');
+            view.setUint32(16, 16, true);
+            view.setUint16(20, 1, true); // PCM
+            view.setUint16(22, 2, true); // Stereo
+            view.setUint32(24, sr, true);
+            view.setUint32(28, sr * 4, true);
+            view.setUint16(32, 4, true);
+            view.setUint16(34, 16, true);
+            writeStr(36, 'data');
+            view.setUint32(40, numSamples * 4, true);
+
+            let offset = 44;
+            for (let i = 0; i < numSamples; i++) {
+                const sl = Math.max(-0.92, Math.min(0.92, left[i]));
+                const srVal = Math.max(-0.92, Math.min(0.92, right[i]));
+                view.setInt16(offset, sl * 32767, true);
+                view.setInt16(offset + 2, srVal * 32767, true);
+                offset += 4;
+            }
+            const blob = new Blob([wavBuffer], { type: 'audio/wav' });
+            return URL.createObjectURL(blob);
+        }
+
+        function ensureBGMAudio() {
+            if (!bgmAudio) {
+                bgmAudio = new Audio(buildCheerfulChildrenWavUrl());
+                bgmAudio.loop = true;
+                bgmAudio.volume = 0.65;
+                bgmAudio.onplay = () => { bgmPlaying = true; updateBGMButtons(); };
+                bgmAudio.onpause = () => { bgmPlaying = false; updateBGMButtons(); };
+            }
+            return bgmAudio;
+        }
+
+        function updateBGMButtons() {
+            const btn1 = document.getElementById('bgmToggleBtn');
+            const btn2 = document.getElementById('bgmModalBtn');
+            if (bgmPlaying) {
+                if (btn1) {
+                    btn1.classList.add('bgm-active');
+                    btn1.innerHTML = '<span class="bgm-note-icon">🎵</span><span>童趣配樂：播放中</span>';
+                }
+                if (btn2) {
+                    btn2.innerHTML = '<span class="bgm-note-icon">🎵</span><span>童趣配樂：播放中</span>';
+                }
+            } else {
+                if (btn1) {
+                    btn1.classList.remove('bgm-active');
+                    btn1.innerHTML = '<span>🔇 童趣配樂：已靜音</span>';
+                }
+                if (btn2) {
+                    btn2.innerHTML = '<span>🔇 童趣配樂：已靜音</span>';
+                }
+            }
+        }
+
+        function startCheerfulBGM() {
+            if (bgmUserMuted) return;
+            const audio = ensureBGMAudio();
+            audio.play().catch(() => {});
+        }
+
+        function toggleCheerfulBGM() {
+            const audio = ensureBGMAudio();
+            if (bgmPlaying) {
+                bgmUserMuted = true;
+                audio.pause();
+            } else {
+                bgmUserMuted = false;
+                audio.play().catch(() => {});
+            }
+        }
+
+        function tryAutoStartBGM() {
+            startCheerfulBGM();
+            const unlockOnce = () => {
+                if (!bgmPlaying && !bgmUserMuted) {
+                    startCheerfulBGM();
+                }
+                document.removeEventListener('click', unlockOnce);
+                document.removeEventListener('touchstart', unlockOnce);
+            };
+            document.addEventListener('click', unlockOnce);
+            document.addEventListener('touchstart', unlockOnce);
+        }
+
+        /* Seamless 3D Map Overlay so BGM continues uninterrupted */
+        function open3DMapOverlay(e) {
+            if (e) e.preventDefault();
+            startCheerfulBGM();
+            const modal = document.getElementById('map3dModal');
+            const iframe = document.getElementById('map3dIframe');
+            const link = document.getElementById('map3dLink');
+            if (!modal || !iframe) return;
+            const targetUrl = link ? link.getAttribute('href') : './huashan-magicbox-3d.html';
+            if (!iframe.getAttribute('src')) {
+                iframe.setAttribute('src', targetUrl);
+            }
+            modal.classList.add('open');
+            modal.setAttribute('aria-hidden', 'false');
+        }
+
+        function close3DMapOverlay() {
+            const modal = document.getElementById('map3dModal');
+            if (!modal) return;
+            modal.classList.remove('open');
+            modal.setAttribute('aria-hidden', 'true');
+        }
+
         let currentTheme = 'dark';
         function setCardTheme(mode) {
             currentTheme = mode;
@@ -798,6 +1155,7 @@
             if (params.get('theme') === 'light') {
                 setCardTheme('light');
             }
+            tryAutoStartBGM();
         });
     
         
