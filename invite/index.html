@@ -231,7 +231,7 @@ body{
   color:#e2e8f0;
 }
 
-/* Event Schedule Table (Official 7 stages from PDF Page 2) */
+/* Event Schedule Table (Official 7 stages from latest PDF Page 2) */
 .agenda-sec{
   background:rgba(15, 23, 42, 0.68);
   border:1px solid rgba(255,255,255,0.14);
@@ -382,8 +382,11 @@ body{
 <body>
 <div class="toast" id="toast"></div>
 
+<div class="stage-wrap">
+
 <main class="invite-card" aria-label="貴賓電子邀請函">
   <div class="indigenous-ribbon"></div>
+  
 
   <div class="invite-body">
     <!-- Hero Banner with Live Animated Waving 巧虎 & 琪琪 (Complete Mimi Hand & No Voice Badge) -->
@@ -421,7 +424,7 @@ body{
       </div>
     </div>
 
-    <!-- Official 7-Stage Event Schedule from PDF Page 2 -->
+    <!-- Official 7-Stage Event Schedule from Latest PDF Page 2 (10:30-10:35 開場暖身 first, 10:35-10:45 貴賓致詞 second) -->
     <div class="agenda-sec">
       <div class="agenda-title">
         <span>📋 活動流程</span>
@@ -429,7 +432,12 @@ body{
       </div>
       <div class="agenda-list">
         <div class="agenda-row">
-          <span class="agenda-time">10:30-10:40</span>
+          <span class="agenda-time">10:30-10:35</span>
+          <span class="agenda-stage">開場暖身</span>
+          <div class="agenda-desc">主持人以簡單的族語問候開場</div>
+        </div>
+        <div class="agenda-row">
+          <span class="agenda-time">10:35-10:45</span>
           <span class="agenda-stage">貴賓致詞</span>
           <div class="agenda-desc">
             <ol>
@@ -438,11 +446,6 @@ body{
               <li>原住民族委員會 <b>Ljaucu・Zingrur 曾智勇</b> 主委</li>
             </ol>
           </div>
-        </div>
-        <div class="agenda-row">
-          <span class="agenda-time">10:40-10:45</span>
-          <span class="agenda-stage">開場暖身</span>
-          <div class="agenda-desc">主持人以簡單的族語問候開場</div>
         </div>
         <div class="agenda-row">
           <span class="agenda-time">10:45-10:50</span>
@@ -499,6 +502,7 @@ body{
     </div>
   </div>
 </main>
+</div>
 
 <script>
 const PREMIERE_TTS = [];
@@ -560,8 +564,8 @@ const calUrl = 'https://calendar.google.com/calendar/render?action=TEMPLATE' +
   '&details=' + encodeURIComponent(
     '【活動流程】\n' +
     '10:00-10:30 報到時間\n' +
-    '10:30-10:40 貴賓致詞（原語會 俄鄧・殷艾董事長、倍樂生 小沼和幸總經理、原民會 曾智勇主委）\n' +
-    '10:40-10:45 開場暖身（主持人族語問候開場）\n' +
+    '10:30-10:35 開場暖身（主持人族語問候開場）\n' +
+    '10:35-10:45 貴賓致詞（原語會 俄鄧・殷艾董事長、倍樂生 小沼和幸總經理、原民會 曾智勇主委）\n' +
     '10:45-10:50 巧虎、琪琪帶動跳（排灣語《世界真美妙》）\n' +
     '10:50-11:15 動畫首播：1.奇妙屋的大掃除(泰雅語) 2.快飛青蛙(阿美語)\n' +
     '11:15-11:30 互動環節：1.有獎徵答 2.帶動教學泰雅、阿美語-頭兒肩膀膝腳趾\n' +
