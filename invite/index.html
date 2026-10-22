@@ -1,11 +1,11 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>「族語童萌・巧虎同行」—巧虎族語動畫首映會｜貴賓電子邀請函</title>
-<meta property="og:title" content="💌「族語童萌・巧虎同行」—巧虎族語動畫首映會｜貴賓電子邀請函">
-<meta property="og:description" content="115年10月28日(三) 上午10:00報到｜華山1914 東3A Magic Box｜點擊查看活動流程與 3D 動線導覽">
+<title>「族語童萌・巧虎同行」—巧虎族語動畫首映會｜電子邀請卡</title>
+<meta property="og:title" content="💌「族語童萌・巧虎同行」—巧虎族語動畫首映會｜電子邀請卡">
+<meta property="og:description" content="2026年10月28日 ( 三 ) 10:00開始入場｜華山1914文化創意產業園區東 3A 館">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://lowking0330.github.io/huashan-magicbox-3d/og-invite.png">
 <style>
@@ -26,14 +26,19 @@ body{
   display:flex;
   align-items:center;
   justify-content:center;
-  padding:12px 10px;
+  padding:14px 10px;
+}
+.stage-wrap{
+  width:100%;
+  max-width:500px;
 }
 
 /* Royal Purple & Gold Invitation Card */
 .invite-card{
   position:relative;
   width:100%;
-  max-width:540px;
+  max-width:500px;
+  margin:0 auto;
   display:flex;
   flex-direction:column;
   background:linear-gradient(165deg, rgba(46, 16, 101, 0.96) 0%, rgba(17, 24, 39, 0.98) 55%, rgba(23, 15, 48, 0.98) 100%);
@@ -59,24 +64,25 @@ body{
 }
 
 .invite-body{
-  padding:11px 15px 9px;
+  padding:14px 18px 12px;
 }
 
-/* Invitation Header with Live Waving 巧虎 & 琪琪 (No voice badge under mascots) */
+/* Invitation Header with Live Waving 巧虎 & 琪琪 */
 .invite-hero{
   display:flex;
   align-items:center;
-  gap:12px;
-  background:radial-gradient(circle at 20% 50%, rgba(168, 85, 247, 0.35), rgba(30, 27, 75, 0.55));
+  justify-content:center;
+  gap:14px;
+  background:radial-gradient(circle at 25% 50%, rgba(168, 85, 247, 0.35), rgba(30, 27, 75, 0.55));
   border:1px solid rgba(253, 224, 71, 0.38);
-  border-radius:15px;
-  padding:8px 12px;
-  margin-bottom:8px;
+  border-radius:16px;
+  padding:10px 14px;
+  margin-bottom:12px;
 }
 .hero-mascot-wrap{
   position:relative;
-  width:94px;
-  height:88px;
+  width:96px;
+  height:90px;
   flex-shrink:0;
 }
 .hero-mascot-wrap canvas{
@@ -86,50 +92,32 @@ body{
   filter:drop-shadow(0 4px 10px rgba(0,0,0,0.45));
 }
 .hero-titles{
-  flex:1;
   min-width:0;
-}
-.vip-kicker{
-  display:inline-block;
-  background:linear-gradient(90deg, #fbbf24, #f59e0b);
-  color:#1e1b4b;
-  font-size:10.5px;
-  font-weight:900;
-  padding:2px 9px;
-  border-radius:999px;
-  letter-spacing:0.5px;
-  margin-bottom:3px;
+  text-align:left;
 }
 .hero-titles h1{
   margin:0;
-  font-size:clamp(16px, 4.2vw, 20px);
+  font-size:clamp(18px, 4.6vw, 22px);
   font-weight:900;
   color:#fef08a;
-  line-height:1.22;
+  line-height:1.25;
   text-shadow:0 2px 8px rgba(0,0,0,0.5);
 }
 .hero-titles h2{
-  margin:2px 0 0;
-  font-size:clamp(13px, 3.4vw, 15px);
-  font-weight:800;
+  margin:4px 0 0;
+  font-size:clamp(15px, 3.8vw, 17.5px);
+  font-weight:900;
   color:#ffffff;
-  letter-spacing:0.4px;
+  letter-spacing:0.6px;
 }
-.hero-orgs{
-  margin-top:4px;
-  font-size:11px;
-  color:#cbd5e1;
-  line-height:1.35;
-}
-.hero-orgs b{color:#fde047}
 
-/* 4 Premiere Indigenous Languages Audio Bar (Single-line clean chips without episode names) */
+/* Optional 4 Premiere Indigenous Languages Audio Bar */
 .tts-strip{
   background:rgba(88, 28, 135, 0.32);
   border:1px solid rgba(192, 132, 252, 0.32);
   border-radius:12px;
   padding:6px 9px;
-  margin-bottom:8px;
+  margin-bottom:10px;
 }
 .tts-strip-head{
   display:flex;
@@ -187,116 +175,175 @@ body{
   flex-shrink:0;
 }
 
-/* Key Event Time & Location Grid */
-.info-grid{
-  display:grid;
-  grid-template-columns:repeat(2, minmax(0, 1fr));
-  gap:6px;
-  margin-bottom:8px;
+/* Event Time & Location Bullet List (Exact match to reference photo) */
+.event-meta-list{
+  background:rgba(15, 23, 42, 0.65);
+  border:1px solid rgba(255, 255, 255, 0.14);
+  border-radius:14px;
+  padding:11px 14px;
+  margin-bottom:12px;
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+  font-size:13.2px;
+  line-height:1.45;
 }
-.info-box{
-  background:rgba(15, 23, 42, 0.72);
-  border:1px solid rgba(255,255,255,0.14);
-  border-radius:10px;
-  padding:6px 9px;
+.meta-item{
   display:flex;
   align-items:flex-start;
-  gap:7px;
-  min-width:0;
+  gap:6px;
 }
-.info-box .ico{
-  font-size:15px;
-  line-height:1;
-  margin-top:2px;
-}
-.info-box .txt{
-  display:flex;
-  flex-direction:column;
-  gap:1px;
-  min-width:0;
-}
-.info-box .lbl{
-  font-size:10px;
-  color:#94a3b8;
-  font-weight:700;
-}
-.info-box .val{
-  font-size:12px;
+.meta-dot{
+  color:#fde047;
   font-weight:900;
-  color:#fef08a;
-  line-height:1.25;
+  line-height:1.45;
 }
-.info-box .sub{
-  font-size:10px;
-  color:#e2e8f0;
+.meta-text b{
+  color:#fde047;
+  font-weight:900;
+}
+.meta-sub{
+  display:block;
+  color:#cbd5e1;
+  font-size:12.4px;
+  margin-top:1px;
 }
 
-/* Event Schedule Table (Official 7 stages from latest PDF Page 2) */
-.agenda-sec{
-  background:rgba(15, 23, 42, 0.68);
-  border:1px solid rgba(255,255,255,0.14);
-  border-radius:12px;
-  overflow:hidden;
+/* Cordial Invitation & Host Signatures Block */
+.cordial-box{
+  text-align:center;
+  margin-bottom:12px;
+  padding:6px 4px;
 }
-.agenda-title{
-  background:rgba(251, 191, 36, 0.15);
-  border-bottom:1px solid rgba(251, 191, 36, 0.3);
-  padding:5px 10px;
-  font-size:11.8px;
+.cordial-title{
+  font-size:17px;
   font-weight:900;
-  color:#fde047;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
+  color:#fef08a;
+  letter-spacing:1.5px;
+  margin-bottom:10px;
+  text-shadow:0 2px 6px rgba(0,0,0,0.4);
 }
-.agenda-list{
+.hosts-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  background:rgba(255, 255, 255, 0.05);
+  border:1px solid rgba(253, 224, 71, 0.25);
+  border-radius:12px;
+  padding:9px 10px;
+}
+.host-col{
   display:flex;
   flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:2px;
 }
-.agenda-row{
+.host-org{
+  font-size:11.5px;
+  color:#e2e8f0;
+  font-weight:700;
+  line-height:1.3;
+}
+.host-name{
+  font-size:14px;
+  color:#ffffff;
+  font-weight:900;
+  margin-top:2px;
+}
+.host-indigenous{
+  font-size:11px;
+  color:#fde047;
+  font-weight:800;
+}
+
+/* 2-Column Schedule Table (Exact match to reference photo: 時間 | 活動流程) */
+.schedule-wrap{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  margin-bottom:12px;
+}
+.schedule-badge{
+  background:#6b4226;
+  border:1.5px solid #fde047;
+  color:#fde047;
+  font-size:14px;
+  font-weight:900;
+  letter-spacing:2px;
+  padding:4px 22px;
+  border-radius:999px;
+  margin-bottom:8px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.35);
+}
+.schedule-table{
+  width:100%;
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+.sched-row{
   display:grid;
-  grid-template-columns:76px 88px 1fr;
-  gap:6px;
-  padding:5px 10px;
-  border-bottom:1px solid rgba(255,255,255,0.07);
-  font-size:11.2px;
-  line-height:1.38;
-  align-items:start;
+  grid-template-columns:44% 56%;
+  align-items:center;
+  padding:6.5px 16px;
+  border-radius:999px;
+  font-size:13.5px;
 }
-.agenda-row:last-child{border-bottom:0}
-.agenda-time{
+.sched-row.head{
+  background:linear-gradient(90deg, #f3cf65, #eab308);
+  color:#1e1b4b;
+  font-weight:900;
+  font-size:13.5px;
+  margin-bottom:2px;
+}
+.sched-row.alt{
+  background:rgba(243, 207, 101, 0.22);
+  border:1px solid rgba(253, 224, 71, 0.28);
+}
+.sched-row.plain{
+  background:rgba(15, 23, 42, 0.55);
+  border:1px solid rgba(255, 255, 255, 0.06);
+}
+.sched-time{
   font-family:"Segoe UI",Roboto,sans-serif;
   font-weight:800;
   color:#fde047;
-  font-size:10.8px;
-  background:rgba(251,191,36,0.12);
-  padding:2px 4px;
-  border-radius:5px;
-  text-align:center;
+  letter-spacing:0.3px;
 }
-.agenda-stage{
+.sched-row.head .sched-time,
+.sched-row.head .sched-stage{
+  color:#1e1b4b;
+  font-weight:900;
+}
+.sched-stage{
   font-weight:800;
-  color:#c084fc;
-  line-height:1.3;
+  color:#ffffff;
 }
-.agenda-desc{
-  color:#f1f5f9;
-  font-size:11px;
+
+/* Footer Organizers Line */
+.orgs-footer{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:6px 16px;
+  font-size:11.5px;
+  color:#cbd5e1;
+  padding-top:6px;
+  border-top:1px solid rgba(255,255,255,0.1);
 }
-.agenda-desc ol{
-  margin:0;
-  padding-left:14px;
+.orgs-footer b{
+  color:#fde047;
 }
-.agenda-desc li{margin-bottom:1px}
 
 /* Action Footer inside Invitation Card */
 .invite-footer{
-  padding:9px 15px 12px;
+  padding:10px 18px 14px;
   background:rgba(15, 23, 42, 0.95);
   border-top:1px solid rgba(255,255,255,0.14);
   display:flex;
   flex-direction:column;
-  gap:6px;
+  gap:7px;
 }
 .cta-go-3d{
   appearance:none;
@@ -369,12 +416,12 @@ body{
 
 @media(max-width:520px){
   body{padding:8px 6px}
-  .invite-body{padding:10px 11px 8px}
-  .invite-hero{gap:9px;padding:7px 9px}
-  .hero-mascot-wrap{width:80px;height:76px}
-  .agenda-row{grid-template-columns:68px 78px 1fr;gap:5px;padding:4.5px 7px;font-size:10.8px}
-  .agenda-time{font-size:10px;padding:1.5px 3px}
-  .agenda-desc{font-size:10.6px}
+  .invite-body{padding:12px 13px 10px}
+  .invite-hero{gap:10px;padding:8px 10px}
+  .hero-mascot-wrap{width:84px;height:80px}
+  .event-meta-list{padding:9px 11px;font-size:12.5px}
+  .meta-sub{font-size:11.5px}
+  .sched-row{padding:6px 14px;font-size:12.8px}
   .cta-go-3d{font-size:13.2px;padding:10px 12px}
 }
 </style>
@@ -389,105 +436,94 @@ body{
   
 
   <div class="invite-body">
-    <!-- Hero Banner with Live Animated Waving 巧虎 & 琪琪 (Complete Mimi Hand & No Voice Badge) -->
+    <!-- Hero Banner with Live Animated Waving 巧虎 & 琪琪 -->
     <div class="invite-hero">
       <div class="hero-mascot-wrap">
         <canvas id="cardMascotCanvas" width="532" height="500"></canvas>
       </div>
       <div class="hero-titles">
-        <span class="vip-kicker">✨ VIP 貴賓專屬電子邀請函</span>
         <h1>「族語童萌・巧虎同行」</h1>
         <h2>巧虎族語動畫首映會</h2>
-        <div class="hero-orgs">
-          <b>原住民族委員會</b> × <b>日商倍樂生</b> × <b>原語會</b>
+      </div>
+    </div>
+
+    <!-- Event Time & Venue (Exact text from photo) -->
+    <div class="event-meta-list">
+      <div class="meta-item">
+        <span class="meta-dot">•</span>
+        <div class="meta-text">
+          <b>活動時間：</b>2026年10月28日 ( 三 ) 10:00開始入場
+        </div>
+      </div>
+      <div class="meta-item">
+        <span class="meta-dot">•</span>
+        <div class="meta-text">
+          <b>活動地點：</b>華山1914文化創意產業園區東 3A 館
+          <span class="meta-sub">（臺北市中正區八德路一段1號）</span>
         </div>
       </div>
     </div>
 
-    <!-- Date/Time & Venue Grid -->
-    <div class="info-grid">
-      <div class="info-box">
-        <div class="ico">📅</div>
-        <div class="txt">
-          <span class="lbl">活動時間</span>
-          <span class="val">115年10月28日 (三)</span>
-          <span class="sub">10:00–10:30 報到｜10:30 開始</span>
+    <!-- Cordial Invitation & Host Signatures -->
+    <div class="cordial-box">
+      <div class="cordial-title">誠摯邀請您蒞臨指導</div>
+      <div class="hosts-grid">
+        <div class="host-col">
+          <span class="host-org">原住民族委員會<br>主任委員</span>
+          <span class="host-name">曾智勇</span>
+          <span class="host-indigenous">Ljaucu・Zingrur</span>
         </div>
-      </div>
-      <div class="info-box">
-        <div class="ico">📍</div>
-        <div class="txt">
-          <span class="lbl">活動場地</span>
-          <span class="val">華山1914｜東3A Magic Box</span>
-          <span class="sub">忠孝東路正門直行 ➔ 路口右轉</span>
+        <div class="host-col">
+          <span class="host-org">財團法人原住民族語言<br>研究發展基金會 董事長</span>
+          <span class="host-name">俄鄧・殷艾</span>
+          <span class="host-indigenous">Eteng・Ingay</span>
         </div>
       </div>
     </div>
 
-    <!-- Official 7-Stage Event Schedule from Latest PDF Page 2 (10:30-10:35 開場暖身 first, 10:35-10:45 貴賓致詞 second) -->
-    <div class="agenda-sec">
-      <div class="agenda-title">
-        <span>📋 活動流程</span>
-        <span style="font-size:10.5px;color:#cbd5e1;font-weight:700">10:00–10:30 報到</span>
-      </div>
-      <div class="agenda-list">
-        <div class="agenda-row">
-          <span class="agenda-time">10:30-10:35</span>
-          <span class="agenda-stage">開場暖身</span>
-          <div class="agenda-desc">主持人以簡單的族語問候開場</div>
+    <!-- 2-Column Schedule Table (Exact text from photo, no extra 3rd column notes) -->
+    <div class="schedule-wrap">
+      <div class="schedule-badge">流程表</div>
+      <div class="schedule-table">
+        <div class="sched-row head">
+          <span class="sched-time">時間</span>
+          <span class="sched-stage">活動流程</span>
         </div>
-        <div class="agenda-row">
-          <span class="agenda-time">10:35-10:45</span>
-          <span class="agenda-stage">貴賓致詞</span>
-          <div class="agenda-desc">
-            <ol>
-              <li>財團法人原住民族語言研究發展基金會 <b>俄鄧・殷艾 Eteng・Ingay</b> 董事長</li>
-              <li>日商倍樂生股份有限公司台北分公司 <b>小沼和幸</b> 總經理</li>
-              <li>原住民族委員會 <b>Ljaucu・Zingrur 曾智勇</b> 主委</li>
-            </ol>
-          </div>
+        <div class="sched-row plain">
+          <span class="sched-time">10:30 - 10:35</span>
+          <span class="sched-stage">開場暖身</span>
         </div>
-        <div class="agenda-row">
-          <span class="agenda-time">10:45-10:50</span>
-          <span class="agenda-stage">巧虎、琪琪<br>帶動跳</span>
-          <div class="agenda-desc">巧虎、琪琪帶動唱跳主題曲：排灣語《世界真美妙》</div>
+        <div class="sched-row alt">
+          <span class="sched-time">10:35 - 10:45</span>
+          <span class="sched-stage">貴賓致詞</span>
         </div>
-        <div class="agenda-row">
-          <span class="agenda-time">10:50-11:15</span>
-          <span class="agenda-stage">動畫首播</span>
-          <div class="agenda-desc">
-            <ol>
-              <li>奇妙屋的大掃除（泰雅語）</li>
-              <li>快飛青蛙（阿美語）</li>
-            </ol>
-          </div>
+        <div class="sched-row plain">
+          <span class="sched-time">10:45 - 10:50</span>
+          <span class="sched-stage">主題曲表演</span>
         </div>
-        <div class="agenda-row">
-          <span class="agenda-time">11:15-11:30</span>
-          <span class="agenda-stage">互動環節</span>
-          <div class="agenda-desc">
-            <ol>
-              <li>有獎徵答發送小禮物</li>
-              <li>帶動教學：泰雅、阿美語－頭兒肩膀膝腳趾</li>
-            </ol>
-          </div>
+        <div class="sched-row alt">
+          <span class="sched-time">10:50 - 11:15</span>
+          <span class="sched-stage">動畫首播</span>
         </div>
-        <div class="agenda-row">
-          <span class="agenda-time">11:30-11:35</span>
-          <span class="agenda-stage">大合照</span>
-          <div class="agenda-desc">拍照環節</div>
+        <div class="sched-row plain">
+          <span class="sched-time">11:15 - 11:30</span>
+          <span class="sched-stage">互動環節</span>
         </div>
-        <div class="agenda-row">
-          <span class="agenda-time">11:35-</span>
-          <span class="agenda-stage">媒體聯訪及<br>點心時間</span>
-          <div class="agenda-desc">
-            <ol>
-              <li>長官、貴賓受訪</li>
-              <li>發放紀念小禮物，隨後開放自由交流，享用現場提供的點心</li>
-            </ol>
-          </div>
+        <div class="sched-row alt">
+          <span class="sched-time">11:30 - 11:35</span>
+          <span class="sched-stage">大合照</span>
+        </div>
+        <div class="sched-row plain">
+          <span class="sched-time">11:35 ~</span>
+          <span class="sched-stage">媒體聯訪及點心時間</span>
         </div>
       </div>
+    </div>
+
+    <!-- Advisor & Organizer Footer -->
+    <div class="orgs-footer">
+      <span><b>指導單位：</b>原住民族委員會</span>
+      <span><b>主辦單位：</b>財團法人原住民族語言研究發展基金會</span>
     </div>
   </div>
 
@@ -563,16 +599,16 @@ const calUrl = 'https://calendar.google.com/calendar/render?action=TEMPLATE' +
   '&dates=20261028T020000Z/20261028T040000Z' +
   '&details=' + encodeURIComponent(
     '【活動流程】\n' +
-    '10:00-10:30 報到時間\n' +
-    '10:30-10:35 開場暖身（主持人族語問候開場）\n' +
-    '10:35-10:45 貴賓致詞（原語會 俄鄧・殷艾董事長、倍樂生 小沼和幸總經理、原民會 曾智勇主委）\n' +
-    '10:45-10:50 巧虎、琪琪帶動跳（排灣語《世界真美妙》）\n' +
-    '10:50-11:15 動畫首播：1.奇妙屋的大掃除(泰雅語) 2.快飛青蛙(阿美語)\n' +
-    '11:15-11:30 互動環節：1.有獎徵答 2.帶動教學泰雅、阿美語-頭兒肩膀膝腳趾\n' +
-    '11:30-11:35 大合照\n' +
-    '11:35- 媒體聯訪及點心時間'
+    '10:00 開始入場\n' +
+    '10:30 - 10:35 開場暖身\n' +
+    '10:35 - 10:45 貴賓致詞\n' +
+    '10:45 - 10:50 主題曲表演\n' +
+    '10:50 - 11:15 動畫首播\n' +
+    '11:15 - 11:30 互動環節\n' +
+    '11:30 - 11:35 大合照\n' +
+    '11:35 ~ 媒體聯訪及點心時間'
   ) +
-  '&location=' + encodeURIComponent('華山1914文化創意產業園區 東3A館 Magic Box (台北市中正區八德路一段1號)');
+  '&location=' + encodeURIComponent('華山1914文化創意產業園區東 3A 館（臺北市中正區八德路一段1號）');
 document.getElementById('addCalBtn').href = calUrl;
 
 // 2D Animated Waving 巧虎 & 琪琪 on Invitation Card
@@ -679,4 +715,3 @@ requestAnimationFrame(renderCardMascot);
 </script>
 </body>
 </html>
-
