@@ -1208,53 +1208,315 @@ function rebuildCrowd(){
   while(C.children.length) C.remove(C.children[0]);
   crowdAgents.length = 0;
 
-  const totalCount = 105;
-  const headGeo = new THREE.SphereGeometry(0.68, 10, 8);
-  const bodyGeo = new THREE.CylinderGeometry(0.55, 0.72, 2.3, 10);
-  const skinMat = new THREE.MeshStandardMaterial({color: new THREE.Color(0xfde68a).convertSRGBToLinear(), roughness:0.6});
-
   const activeRoutes = cfg.subRoutes ? ROUTES : ROUTES.filter(r => r.isMain);
+  const usePawnStyle = params.get('crowdstyle') === 'pawn';
 
-  for(let i = 0; i < totalCount; i++){
+  if(usePawnStyle){
+    const totalCount = 105;
+    const headGeo = new THREE.SphereGeometry(0.68, 10, 8);
+    const bodyGeo = new THREE.CylinderGeometry(0.55, 0.72, 2.3, 10);
+    const skinMat = new THREE.MeshStandardMaterial({color: new THREE.Color(0xfde68a).convertSRGBToLinear(), roughness:0.6});
+
+    for(let i = 0; i < totalCount; i++){
+      let route = activeRoutes[0];
+      if(activeRoutes.length > 1){
+        const rnd = Math.random();
+        let acc = 0;
+        for(const r of activeRoutes){
+          acc += r.weight;
+          if(rnd <= acc){ route = r; break; }
+        }
+      }
+      const pts3d = route.points.map(([px, py]) => pt(px, py, 0.4));
+      const curve = new THREE.CatmullRomCurve3(pts3d, false, 'catmullrom', 0.08);
+      const agentGroup = new THREE.Group();
+      const bodyMat = new THREE.MeshStandardMaterial({
+        color: new THREE.Color(route.color).convertSRGBToLinear(),
+        roughness: 0.45
+      });
+      const body = new THREE.Mesh(bodyGeo, bodyMat);
+      body.position.y = 1.15;
+      body.castShadow = true;
+      agentGroup.add(body);
+      const head = new THREE.Mesh(headGeo, skinMat);
+      head.position.y = 2.75;
+      head.castShadow = true;
+      agentGroup.add(head);
+      C.add(agentGroup);
+      crowdAgents.push({
+        group: agentGroup,
+        isMain: route.isMain,
+        curve,
+        t: (i / totalCount + Math.random() * 0.01) % 1,
+        speed: 0.048 + (i % 5) * 0.006,
+        laneOffset: ((i % 7) / 6 - 0.5) * 3.4,
+        bobPhase: i * 1.1,
+        stepFreq: 9.0,
+        armSwingAmp: 0
+      });
+    }
+    return;
+  }
+
+  // ============================================================================
+  // OPTION B: 3–90 歲三代同堂・精緻微縮沙盤公仔 (Zero-Latency Optimized)
+  // ============================================================================
+  const headGeo     = new THREE.SphereGeometry(0.56, 8, 7);
+  const hairDomeGeo = new THREE.SphereGeometry(0.60, 8, 6, 0, Math.PI * 2, 0, Math.PI * 0.58);
+  const bunGeo      = new THREE.SphereGeometry(0.22, 6, 5);
+  const visorGeo    = new THREE.BoxGeometry(0.62, 0.09, 0.44);
+  const torsoGeo    = new THREE.CylinderGeometry(0.40, 0.48, 1.32, 8);
+  const hipGeo      = new THREE.CylinderGeometry(0.45, 0.42, 0.38, 8);
+  const collarGeo   = new THREE.TorusGeometry(0.36, 0.085, 5, 8);
+  collarGeo.rotateX(Math.PI / 2);
+
+  const legGeo = new THREE.CylinderGeometry(0.165, 0.135, 1.12, 6);
+  legGeo.translate(0, -0.52, 0);
+  const armGeo = new THREE.CylinderGeometry(0.135, 0.115, 1.02, 6);
+  armGeo.translate(0, -0.46, 0);
+
+  const backpackGeo = new THREE.BoxGeometry(0.58, 0.68, 0.34);
+  const caneGeo     = new THREE.CylinderGeometry(0.055, 0.04, 1.85, 5);
+  caneGeo.translate(0, -0.85, 0.18);
+
+  const mat = (hex, rough=0.48) => new THREE.MeshStandardMaterial({
+    color: new THREE.Color(hex).convertSRGBToLinear(),
+    roughness: rough
+  });
+
+  const useHybridStyle = params.get('crowdstyle') === 'hybrid';
+
+  const skinWarm   = mat(0xfde68a, 0.50);
+  const skinPeach  = mat(useHybridStyle ? 0xfef08a : 0xfed7aa, 0.50);
+  const hairDark   = mat(useHybridStyle ? 0xfde047 : 0x1c1917, 0.55);
+  const hairBrown  = mat(useHybridStyle ? 0xfacc15 : 0x451a03, 0.55);
+  const hairSilver = mat(0xf8fafc, 0.40);
+  const hairGrey   = mat(0xe2e8f0, 0.45);
+  const capYellow  = mat(0xfacc15, 0.35);
+  const capCoral   = mat(useHybridStyle ? 0xfde047 : 0xfb7185, 0.38);
+  const caneWood   = mat(useHybridStyle ? 0xfbbf24 : 0x78350f, 0.45);
+
+  const pantsDark  = mat(useHybridStyle ? 0x6d28d9 : 0x1e293b, 0.50);
+  const pantsNavy  = mat(useHybridStyle ? 0x7c3aed : 0x312e81, 0.50);
+  const pantsKhaki = mat(useHybridStyle ? 0x8b5cf6 : 0xd6d3d1, 0.50);
+
+  const adultTops  = useHybridStyle
+    ? [mat(0x7c3aed), mat(0x8b5cf6), mat(0x6d28d9), mat(0x9333ea), mat(0xa855f7)]
+    : [mat(0x7c3aed), mat(0x4f46e5), mat(0xdb2777), mat(0x0d9488), mat(0xfef3c7), mat(0x9333ea)];
+  const childTops  = useHybridStyle
+    ? [mat(0xa855f7), mat(0xc084fc), mat(0xfacc15), mat(0x9333ea)]
+    : [mat(0xf43f5e), mat(0x38bdf8), mat(0xfacc15), mat(0x10b981), mat(0xfb923c)];
+  const elderTops  = useHybridStyle
+    ? [mat(0x5b21b6), mat(0x6d28d9), mat(0x7c3aed)]
+    : [mat(0xd97706), mat(0x9f1239), mat(0x3730a3), mat(0x0f766e), mat(0xb45309)];
+  const collarGold = mat(0xfde047, 0.35);
+  const collarWoven= mat(useHybridStyle ? 0xfde047 : 0xef4444, 0.40);
+  const packOrange = mat(useHybridStyle ? 0xfde047 : 0xf97316, 0.40);
+  const packYellow = mat(0xfde047, 0.40);
+
+  function freezeStatic(obj){
+    obj.updateMatrix();
+    obj.matrixAutoUpdate = false;
+  }
+
+  function createMiniFigure(role, variantIdx){
+    const rootG = new THREE.Group();
+    const upperG = new THREE.Group();
+    rootG.add(upperG);
+
+    const isChild = role === 'child';
+    const isTeen  = role === 'teen';
+    const isElder = role === 'elder';
+
+    const scale = isChild ? (variantIdx % 2 === 0 ? 0.58 : 0.65)
+                : isTeen  ? 0.84
+                : isElder ? 0.90
+                : (variantIdx % 2 === 0 ? 1.02 : 0.95);
+
+    const topMat = isChild ? childTops[variantIdx % childTops.length]
+                 : isElder ? elderTops[variantIdx % elderTops.length]
+                 : adultTops[variantIdx % adultTops.length];
+    const botMat = isChild ? (variantIdx % 2 === 0 ? pantsNavy : pantsKhaki)
+                 : (variantIdx % 3 === 0 ? pantsKhaki : pantsDark);
+
+    const leftLeg = new THREE.Mesh(legGeo, botMat);
+    leftLeg.position.set(-0.20, 1.08, 0);
+    rootG.add(leftLeg);
+
+    const rightLeg = new THREE.Mesh(legGeo, botMat);
+    rightLeg.position.set(0.20, 1.08, 0);
+    rootG.add(rightLeg);
+
+    const hip = new THREE.Mesh(hipGeo, botMat);
+    hip.position.y = 1.18;
+    freezeStatic(hip);
+    upperG.add(hip);
+
+    const torso = new THREE.Mesh(torsoGeo, topMat);
+    torso.position.y = 1.92;
+    torso.castShadow = true;
+    freezeStatic(torso);
+    upperG.add(torso);
+
+    if(isElder || (!isChild && variantIdx % 2 === 0)){
+      const col = new THREE.Mesh(collarGeo, isElder ? collarWoven : collarGold);
+      col.position.y = 2.52;
+      freezeStatic(col);
+      upperG.add(col);
+    }
+
+    if(isChild || isTeen){
+      const pack = new THREE.Mesh(backpackGeo, variantIdx % 2 === 0 ? packYellow : packOrange);
+      pack.position.set(0, 1.95, -0.46);
+      freezeStatic(pack);
+      upperG.add(pack);
+    }
+
+    const leftArm = new THREE.Mesh(armGeo, topMat);
+    leftArm.position.set(-0.54, 2.46, 0);
+    upperG.add(leftArm);
+
+    const rightArm = new THREE.Group();
+    rightArm.position.set(0.54, 2.46, 0);
+    const rightArmMesh = new THREE.Mesh(armGeo, topMat);
+    freezeStatic(rightArmMesh);
+    rightArm.add(rightArmMesh);
+
+    if(isElder && variantIdx % 2 === 0){
+      const cane = new THREE.Mesh(caneGeo, caneWood);
+      freezeStatic(cane);
+      rightArm.add(cane);
+    }
+    upperG.add(rightArm);
+
+    const headWrap = new THREE.Group();
+    headWrap.position.y = 3.12;
+    const hScale = isChild ? 1.18 : 1.0;
+    headWrap.scale.set(hScale, hScale, hScale);
+
+    const head = new THREE.Mesh(headGeo, isChild ? skinPeach : skinWarm);
+    freezeStatic(head);
+    headWrap.add(head);
+
+    if(isChild){
+      if(variantIdx % 2 === 0){
+        const cap = new THREE.Mesh(hairDomeGeo, variantIdx % 4 === 0 ? capCoral : capYellow);
+        cap.rotation.x = -0.12;
+        freezeStatic(cap);
+        headWrap.add(cap);
+        const visor = new THREE.Mesh(visorGeo, variantIdx % 4 === 0 ? capCoral : capYellow);
+        visor.position.set(0, 0.12, 0.46);
+        freezeStatic(visor);
+        headWrap.add(visor);
+      } else {
+        const hair = new THREE.Mesh(hairDomeGeo, hairDark);
+        hair.rotation.x = -0.25;
+        freezeStatic(hair);
+        headWrap.add(hair);
+        const bunL = new THREE.Mesh(bunGeo, hairDark);
+        bunL.position.set(-0.48, 0.28, -0.12);
+        freezeStatic(bunL);
+        const bunR = new THREE.Mesh(bunGeo, hairDark);
+        bunR.position.set(0.48, 0.28, -0.12);
+        freezeStatic(bunR);
+        headWrap.add(bunL, bunR);
+      }
+    } else if(isElder){
+      const sMat = variantIdx % 2 === 0 ? hairSilver : hairGrey;
+      const hair = new THREE.Mesh(hairDomeGeo, sMat);
+      hair.rotation.x = -0.28;
+      freezeStatic(hair);
+      headWrap.add(hair);
+      if(variantIdx % 2 === 1){
+        const bun = new THREE.Mesh(bunGeo, sMat);
+        bun.position.set(0, 0.15, -0.58);
+        freezeStatic(bun);
+        headWrap.add(bun);
+      }
+      upperG.rotation.x = 0.09;
+    } else {
+      const hMat = variantIdx % 3 === 0 ? hairBrown : hairDark;
+      const hair = new THREE.Mesh(hairDomeGeo, hMat);
+      hair.rotation.x = -0.26;
+      freezeStatic(hair);
+      headWrap.add(hair);
+      if(variantIdx % 2 === 1){
+        const bun = new THREE.Mesh(bunGeo, hMat);
+        bun.position.set(0, 0.18, -0.56);
+        freezeStatic(bun);
+        headWrap.add(bun);
+      }
+    }
+
+    freezeStatic(headWrap);
+    upperG.add(headWrap);
+    freezeStatic(upperG);
+    rootG.scale.set(scale, scale, scale);
+
+    return { rootG, leftLeg, rightLeg, leftArm, rightArm };
+  }
+
+  let seed = 1337;
+  const rand = () => { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; };
+
+  const clusterSpecs = [
+    ['elder', 'adult', 'child'],
+    ['adult', 'child'],
+    ['elder', 'child'],
+    ['adult', 'adult'],
+    ['adult', 'teen', 'child'],
+    ['elder', 'elder'],
+    ['adult', 'child'],
+    ['adult']
+  ];
+
+  let figCounter = 0;
+  const numClusters = 48;
+  for(let c = 0; c < numClusters; c++){
     let route = activeRoutes[0];
     if(activeRoutes.length > 1){
-      const rnd = Math.random();
+      const rVal = rand();
       let acc = 0;
       for(const r of activeRoutes){
         acc += r.weight;
-        if(rnd <= acc){ route = r; break; }
+        if(rVal <= acc){ route = r; break; }
       }
     }
 
     const pts3d = route.points.map(([px, py]) => pt(px, py, 0.4));
     const curve = new THREE.CatmullRomCurve3(pts3d, false, 'catmullrom', 0.08);
 
-    const agentGroup = new THREE.Group();
-    const bodyMat = new THREE.MeshStandardMaterial({
-      color: new THREE.Color(route.color).convertSRGBToLinear(),
-      roughness: 0.45
-    });
+    const roles = clusterSpecs[c % clusterSpecs.length];
+    const baseT = (c / numClusters + rand() * 0.012) % 1;
+    const hasElder = roles.includes('elder');
+    const baseSpeed = hasElder ? (0.038 + rand() * 0.012) : (0.048 + rand() * 0.022);
+    const centerLane = (rand() - 0.5) * 2.2;
 
-    const body = new THREE.Mesh(bodyGeo, bodyMat);
-    body.position.y = 1.15;
-    body.castShadow = true;
-    agentGroup.add(body);
+    roles.forEach((role, idx) => {
+      figCounter++;
+      const fig = createMiniFigure(role, figCounter);
+      C.add(fig.rootG);
 
-    const head = new THREE.Mesh(headGeo, skinMat);
-    head.position.y = 2.75;
-    head.castShadow = true;
-    agentGroup.add(head);
+      const memberOffset = (idx - (roles.length - 1) / 2) * 1.35;
+      const stepFreq = role === 'child' ? 13.5 : role === 'elder' ? 7.5 : 9.8;
+      const armSwingAmp = role === 'child' ? 0.68 : role === 'elder' ? 0.35 : 0.52;
 
-    C.add(agentGroup);
-
-    crowdAgents.push({
-      group: agentGroup,
-      isMain: route.isMain,
-      curve,
-      t: Math.random(),
-      speed: 0.048 + Math.random() * 0.035,
-      laneOffset: (Math.random() - 0.5) * 3.6,
-      bobPhase: Math.random() * Math.PI * 2
+      crowdAgents.push({
+        group: fig.rootG,
+        leftLeg: fig.leftLeg,
+        rightLeg: fig.rightLeg,
+        leftArm: fig.leftArm,
+        rightArm: fig.rightArm,
+        role,
+        isMain: route.isMain,
+        curve,
+        t: (baseT + idx * 0.0025) % 1,
+        speed: baseSpeed,
+        laneOffset: centerLane + memberOffset,
+        bobPhase: figCounter * 1.3,
+        stepFreq,
+        armSwingAmp
+      });
     });
   }
 }
@@ -1330,8 +1592,19 @@ function updateCrowdAndChevrons(dt, elapsed){
       const tan = ag.curve.getTangentAt(ag.t);
       const side = new THREE.Vector3(-tan.z, 0, tan.x).normalize();
       ag.group.position.copy(pos).addScaledVector(side, ag.laneOffset);
-      ag.group.position.y = 0.3 + Math.abs(Math.sin(elapsed * 9 + ag.bobPhase)) * 0.42;
+      const phase = elapsed * (ag.stepFreq || 9.0) + ag.bobPhase;
+      const stride = Math.sin(phase);
+      const bounceAmp = ag.role === 'child' ? 0.46 : ag.role === 'elder' ? 0.22 : 0.34;
+      ag.group.position.y = 0.25 + Math.abs(stride) * bounceAmp;
       ag.group.rotation.y = Math.atan2(tan.x, tan.z);
+
+      if(ag.leftLeg && ag.rightLeg){
+        const legAmp = ag.role === 'elder' ? 0.38 : 0.55;
+        ag.leftLeg.rotation.x  =  stride * legAmp;
+        ag.rightLeg.rotation.x = -stride * legAmp;
+        ag.leftArm.rotation.x  = -stride * ag.armSwingAmp;
+        ag.rightArm.rotation.x =  stride * ag.armSwingAmp;
+      }
     }
   }
 
