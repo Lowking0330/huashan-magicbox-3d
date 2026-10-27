@@ -292,6 +292,14 @@ body.ui-hidden .restore-pill{display:inline-flex;align-items:center;gap:4px}
 
   <div class="toggle-row">
     <div class="toggle-label">
+      <b>🚻 園區化妝室位置標示（4處）</b>
+      <small>顯著標示東1B、中2、中3、光點旁共 4 處化妝室</small>
+    </div>
+    <button class="sw on" id="swWc" aria-label="切換化妝室標示"></button>
+  </div>
+
+  <div class="toggle-row">
+    <div class="toggle-label">
       <b>✨ 迎賓光柱與 VIP 紅毯拱門</b>
       <small>Magic Box 屋頂金色光束與入口紅毯門面</small>
     </div>
@@ -377,6 +385,7 @@ const params = new URLSearchParams(window.location.search);
 const cfg = {
   mascot:     params.get('mascot') !== '0',     // default ON (巧虎 & 琪琪 waving)
   signs:      params.get('signs') !== '0',      // default ON
+  wc:         params.get('wc') !== '0',         // default ON (4處園區化妝室標示)
   beacon:     params.get('beacon') !== '0',     // default ON
   whiteModel: params.get('white') !== '0',      // default ON
   subRoutes:  params.get('sub') !== '0',        // default ON
@@ -512,6 +521,7 @@ const chevronItems = [];
 const crowdAgents = [];
 const buildingMeshes = [];
 const whiteEdgeLines = [];
+const wcMarkers = [];
 
 let targetBeaconGroup = null, targetPulseRing = null, targetPulseRing2 = null, targetPin = null;
 let vipEnhancementGroup = null; // Holds Golden Sky Beam + VIP Red Carpet + VIP Arch
@@ -697,6 +707,253 @@ function make3DSignpost(px, py, heightPx, text, fg, bg, border, fontSize=26, sca
   return g;
 }
 
+// Exquisite Vector Canvas Badge for 4 Park Restrooms (🚻 化妝室 WC)
+function makeRestroomBadge(title, subTitle, hasAccessible = false, scaleFactor = 0.44){
+  const c = document.createElement('canvas');
+  const ctx = c.getContext('2d');
+  ctx.font = '900 30px "Microsoft JhengHei","Segoe UI",sans-serif';
+  const titleW = ctx.measureText(title).width + (hasAccessible ? 44 : 0);
+  ctx.font = '700 22px "Microsoft JhengHei","Segoe UI",sans-serif';
+  const subW = ctx.measureText(subTitle).width;
+
+  const w = Math.ceil(Math.max(305, 114 + Math.max(titleW, subW) + 28));
+  const h = 114;
+  c.width = w;
+  c.height = h;
+
+  const cardH = 92;
+  const r = 22;
+
+  // Outer card drop shadow & royal sky-blue gradient fill
+  ctx.save();
+  ctx.shadowColor = 'rgba(2, 132, 199, 0.55)';
+  ctx.shadowBlur = 10;
+  ctx.shadowOffsetY = 3;
+
+  const grad = ctx.createLinearGradient(0, 4, 0, cardH);
+  grad.addColorStop(0, '#0284c7');
+  grad.addColorStop(0.55, '#0369a1');
+  grad.addColorStop(1, '#0c4a6e');
+  ctx.fillStyle = grad;
+  ctx.strokeStyle = '#7dd3fc';
+  ctx.lineWidth = 4.5;
+
+  ctx.beginPath();
+  ctx.moveTo(r, 4);
+  ctx.lineTo(w - r, 4);
+  ctx.quadraticCurveTo(w - 4, 4, w - 4, r);
+  ctx.lineTo(w - 4, cardH - r);
+  ctx.quadraticCurveTo(w - 4, cardH, w - r, cardH);
+  ctx.lineTo(w / 2 + 12, cardH);
+  ctx.lineTo(w / 2, h - 4);
+  ctx.lineTo(w / 2 - 12, cardH);
+  ctx.lineTo(r, cardH);
+  ctx.quadraticCurveTo(4, cardH, 4, cardH - r);
+  ctx.lineTo(4, r);
+  ctx.quadraticCurveTo(4, 4, r, 4);
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+  ctx.stroke();
+
+  // Subtle inner gold-white rim
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+
+  // Left White Medallion for Male & Female Pictogram (🚹 | 🚺)
+  const mx = 14, my = 13, mw = 82, mh = 70, mr = 15;
+  ctx.fillStyle = '#ffffff';
+  ctx.strokeStyle = '#bae6fd';
+  ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  ctx.moveTo(mx + mr, my);
+  ctx.lineTo(mx + mw - mr, my);
+  ctx.quadraticCurveTo(mx + mw, my, mx + mw, my + mr);
+  ctx.lineTo(mx + mw, my + mh - mr);
+  ctx.quadraticCurveTo(mx + mw, my + mh, mx + mw - mr, my + mh);
+  ctx.lineTo(mx + mr, my + mh);
+  ctx.quadraticCurveTo(mx, my + mh, mx, my + mh - mr);
+  ctx.lineTo(mx, my + mr);
+  ctx.quadraticCurveTo(mx, my, mx + mr, my);
+  ctx.closePath();
+  ctx.fill();
+  ctx.stroke();
+
+  // Male Silhouette (Left, Sky Blue #0284c7)
+  const maleX = mx + 22;
+  ctx.fillStyle = '#0284c7';
+  ctx.beginPath();
+  ctx.arc(maleX, my + 15, 6.2, 0, Math.PI * 2);
+  ctx.fill();
+  // Male shoulders & torso
+  ctx.beginPath();
+  ctx.moveTo(maleX - 8, my + 24);
+  ctx.lineTo(maleX + 8, my + 24);
+  ctx.quadraticCurveTo(maleX + 11, my + 24, maleX + 11, my + 28);
+  ctx.lineTo(maleX + 11, my + 43);
+  ctx.lineTo(maleX + 7.5, my + 43);
+  ctx.lineTo(maleX + 7.5, my + 30);
+  ctx.lineTo(maleX + 6, my + 30);
+  ctx.lineTo(maleX + 6, my + 61);
+  ctx.lineTo(maleX + 1, my + 61);
+  ctx.lineTo(maleX + 1, my + 44);
+  ctx.lineTo(maleX - 1, my + 44);
+  ctx.lineTo(maleX - 1, my + 61);
+  ctx.lineTo(maleX - 6, my + 61);
+  ctx.lineTo(maleX - 6, my + 30);
+  ctx.lineTo(maleX - 7.5, my + 30);
+  ctx.lineTo(maleX - 7.5, my + 43);
+  ctx.lineTo(maleX - 11, my + 43);
+  ctx.lineTo(maleX - 11, my + 28);
+  ctx.quadraticCurveTo(maleX - 11, my + 24, maleX - 8, my + 24);
+  ctx.closePath();
+  ctx.fill();
+
+  // Center Divider inside Medallion
+  ctx.strokeStyle = '#cbd5e1';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(mx + mw / 2, my + 10);
+  ctx.lineTo(mx + mw / 2, my + mh - 10);
+  ctx.stroke();
+
+  // Female Silhouette (Right, Rose Pink #e11d48)
+  const femX = mx + 60;
+  ctx.fillStyle = '#e11d48';
+  ctx.beginPath();
+  ctx.arc(femX, my + 15, 6.2, 0, Math.PI * 2);
+  ctx.fill();
+  // Female dress & legs
+  ctx.beginPath();
+  ctx.moveTo(femX - 6.5, my + 24);
+  ctx.lineTo(femX + 6.5, my + 24);
+  ctx.quadraticCurveTo(femX + 9.5, my + 24, femX + 10.5, my + 28);
+  ctx.lineTo(femX + 13, my + 41);
+  ctx.lineTo(femX + 9.5, my + 41);
+  ctx.lineTo(femX + 7, my + 30);
+  ctx.lineTo(femX + 5.5, my + 30);
+  ctx.lineTo(femX + 11.5, my + 47);
+  ctx.lineTo(femX + 5.5, my + 47);
+  ctx.lineTo(femX + 5.5, my + 61);
+  ctx.lineTo(femX + 1, my + 61);
+  ctx.lineTo(femX + 1, my + 47);
+  ctx.lineTo(femX - 1, my + 47);
+  ctx.lineTo(femX - 1, my + 61);
+  ctx.lineTo(femX - 5.5, my + 61);
+  ctx.lineTo(femX - 5.5, my + 47);
+  ctx.lineTo(femX - 11.5, my + 47);
+  ctx.lineTo(femX - 5.5, my + 30);
+  ctx.lineTo(femX - 7, my + 30);
+  ctx.lineTo(femX - 9.5, my + 41);
+  ctx.lineTo(femX - 13, my + 41);
+  ctx.lineTo(femX - 10.5, my + 28);
+  ctx.quadraticCurveTo(femX - 9.5, my + 24, femX - 6.5, my + 24);
+  ctx.closePath();
+  ctx.fill();
+
+  // Right Typography Block
+  const tx = 108;
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '900 30px "Microsoft JhengHei","Segoe UI",sans-serif';
+  ctx.textBaseline = 'middle';
+  ctx.textAlign = 'left';
+  ctx.fillText(title, tx, 34);
+
+  if(hasAccessible){
+    const tWidth = ctx.measureText(title).width;
+    const ax = tx + tWidth + 8, ay = 18, aw = 32, ah = 30, ar = 8;
+    ctx.fillStyle = '#fde047';
+    ctx.beginPath();
+    ctx.moveTo(ax + ar, ay);
+    ctx.lineTo(ax + aw - ar, ay);
+    ctx.quadraticCurveTo(ax + aw, ay, ax + aw, ay + ar);
+    ctx.lineTo(ax + aw, ay + ah - ar);
+    ctx.quadraticCurveTo(ax + aw, ay + ah, ax + aw - ar, ay + ah);
+    ctx.lineTo(ax + ar, ay + ah);
+    ctx.quadraticCurveTo(ax, ay + ah, ax, ay + ah - ar);
+    ctx.lineTo(ax, ay + ar);
+    ctx.quadraticCurveTo(ax, ay, ax + ar, ay);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.fillStyle = '#0c4a6e';
+    ctx.font = '900 20px "Segoe UI Symbol","Microsoft JhengHei",sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('♿', ax + aw / 2, ay + ah / 2 + 1);
+  }
+
+  ctx.fillStyle = '#fde047';
+  ctx.font = '700 22px "Microsoft JhengHei","Segoe UI",sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillText(subTitle, tx, 68);
+
+  const tex = new THREE.CanvasTexture(c);
+  tex.encoding = THREE.sRGBEncoding;
+  const mat = new THREE.SpriteMaterial({map: tex, depthTest: false, transparent: true, toneMapped: false});
+  const sp = new THREE.Sprite(mat);
+  sp.scale.set(c.width * scaleFactor * SCALE, c.height * scaleFactor * SCALE, 1);
+  sp.renderOrder = 27;
+  return sp;
+}
+
+function makeRestroomMarker(px, py, poleHeightPx, title, subTitle, hasAccessible, toastDesc, idx){
+  const g = new THREE.Group();
+  const basePos = pt(px, py, 0);
+  g.position.copy(basePos);
+
+  const poleH = poleHeightPx * SCALE;
+
+  // Glowing Sky-Blue 3D Restroom Pavilion Kiosk at base
+  const kioskMat = new THREE.MeshStandardMaterial({
+    color: new THREE.Color(0x0284c7).convertSRGBToLinear(),
+    emissive: new THREE.Color(0x0369a1).convertSRGBToLinear(),
+    emissiveIntensity: 0.45,
+    roughness: 0.35
+  });
+  const kiosk = new THREE.Mesh(new THREE.BoxGeometry(4.4, 3.6, 4.4), kioskMat);
+  kiosk.position.y = 1.8;
+  kiosk.castShadow = true;
+  g.add(kiosk);
+
+  const kioskRoofMat = new THREE.MeshBasicMaterial({color: 0xe0f2fe, toneMapped: false});
+  const kioskRoof = new THREE.Mesh(new THREE.BoxGeometry(4.9, 0.55, 4.9), kioskRoofMat);
+  kioskRoof.position.y = 3.85;
+  g.add(kioskRoof);
+
+  // Vertical Luminous Cyan Pole
+  const poleMat = new THREE.MeshBasicMaterial({color: 0x38bdf8, toneMapped: false});
+  const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.22, poleH, 10), poleMat);
+  pole.position.y = poleH / 2;
+  g.add(pole);
+
+  // Static Base Ring + Animated Pulsing Ring
+  const innerRing = new THREE.Mesh(
+    new THREE.RingGeometry(2.6, 3.5, 28),
+    new THREE.MeshBasicMaterial({color: 0x38bdf8, side: THREE.DoubleSide, toneMapped: false})
+  );
+  innerRing.rotation.x = -Math.PI / 2;
+  innerRing.position.y = 0.38;
+  g.add(innerRing);
+
+  const pulseRing = new THREE.Mesh(
+    new THREE.RingGeometry(3.2, 4.3, 28),
+    new THREE.MeshBasicMaterial({color: 0x7dd3fc, side: THREE.DoubleSide, transparent: true, opacity: 0.85, toneMapped: false})
+  );
+  pulseRing.rotation.x = -Math.PI / 2;
+  pulseRing.position.y = 0.42;
+  g.add(pulseRing);
+
+  const badge = makeRestroomBadge(title, subTitle, hasAccessible, 0.44);
+  const baseBadgeY = poleH + 3.2;
+  badge.position.y = baseBadgeY;
+  badge.userData.toastDesc = toastDesc;
+  g.add(badge);
+
+  wcMarkers.push({ group: g, badge, pulseRing, baseBadgeY, phase: idx * 1.4 });
+  return g;
+}
+
 class OrthoOrbitControls {
   constructor(cam, dom){
     this.camera = cam;
@@ -806,7 +1063,7 @@ function createBeamTexture(){
 }
 
 function buildParkScene(){
-  ['ground','buildings','targetVenue','routes','subRoutes','crowd','trees','vipSigns','subSigns'].forEach(k => {
+  ['ground','buildings','targetVenue','routes','subRoutes','crowd','trees','vipSigns','subSigns','wcSigns'].forEach(k => {
     const g = new THREE.Group();
     root.add(g);
     groups[k] = g;
@@ -1136,6 +1393,30 @@ function buildParkScene(){
   const SS = groups.subSigns;
   SS.add(make3DSignpost(915, 515,  48, '🅿️ 停車場入口', '#ffffff', '#0f766e', '#5eead4', 32, 0.52));
   SS.add(make3DSignpost(1135, 1185, 44, '🚇 往忠孝新生站', '#ffffff', '#c2410c', '#fed7aa', 30, 0.50));
+
+  // 7. 4 PARK RESTROOM MARKERS (🚻 園區 4 處化妝室位置標示 - Toggleable via swWc)
+  const WC = groups.wcSigns;
+  wcMarkers.length = 0;
+  WC.add(makeRestroomMarker(
+    1785, 785, 96,
+    '化妝室 WC', '東1B 旁・近正門', true,
+    '🚻 東1B 旁化妝室（含無障礙 ♿）：位於忠孝東路正門入口右側，東1B 與 東2A 之間', 0
+  ));
+  WC.add(makeRestroomMarker(
+    1435, 835, 110,
+    '化妝室 WC', '中2館・藝術大街', false,
+    '🚻 中2 果酒大樓化妝室：位於藝術大街西側、中2 館旁', 1
+  ));
+  WC.add(makeRestroomMarker(
+    1095, 895, 112,
+    '化妝室 WC', '中3館・千層野台', false,
+    '🚻 中3 館化妝室：位於中3A 千層野台旁（近服務中心）', 2
+  ));
+  WC.add(makeRestroomMarker(
+    1144, 278, 96,
+    '化妝室 WC', '光點旁・近會場', true,
+    '🚻 光點華山／中6 旁化妝室（含無障礙 ♿）：位於園區北側大煙囪東北方，鄰近東3A 主會場', 3
+  ));
 }
 
 function buildWayfindingRoutes(){
@@ -1530,6 +1811,10 @@ function applyAllToggles(){
   groups.vipSigns.visible = cfg.signs;
   $('swSigns').classList.toggle('on', cfg.signs);
 
+  // 1b. 4 Park Restroom Markers (🚻 化妝室)
+  if(groups.wcSigns) groups.wcSigns.visible = cfg.wc;
+  if($('swWc')) $('swWc').classList.toggle('on', cfg.wc);
+
   // 2. Golden Sky Beacon & VIP Red Carpet Arch
   if(vipEnhancementGroup) vipEnhancementGroup.visible = cfg.beacon;
   $('swBeacon').classList.toggle('on', cfg.beacon);
@@ -1622,6 +1907,16 @@ function updateCrowdAndChevrons(dt, elapsed){
 
   if(targetPin){
     targetPin.position.y = (115 * SCALE) + 12.5 + Math.sin(elapsed * 3.2) * 1.1;
+  }
+
+  if(cfg.wc){
+    for(const wm of wcMarkers){
+      const wp = (elapsed * 0.65 + wm.phase * 0.2) % 1;
+      const ws = 1 + wp * 0.85;
+      wm.pulseRing.scale.set(ws, ws, 1);
+      wm.pulseRing.material.opacity = 0.85 * (1 - wp);
+      wm.badge.position.y = wm.baseBadgeY + Math.sin(elapsed * 2.8 + wm.phase) * 0.65;
+    }
   }
 
   // Update 巧虎 & 琪琪 arm-waving canvas & lively bounce beside Magic Box
@@ -1723,6 +2018,7 @@ function copyShareUrl(){
   const u = new URL(window.location.href);
   u.searchParams.set('mascot', cfg.mascot ? '1' : '0');
   u.searchParams.set('signs', cfg.signs ? '1' : '0');
+  u.searchParams.set('wc', cfg.wc ? '1' : '0');
   u.searchParams.set('beacon', cfg.beacon ? '1' : '0');
   u.searchParams.set('white', cfg.whiteModel ? '1' : '0');
   u.searchParams.set('sub', cfg.subRoutes ? '1' : '0');
@@ -1808,17 +2104,27 @@ function init(){
   controls = new OrthoOrbitControls(camera, renderer.domElement);
   flyToPreset(params.get('cam') === 'magicBox' ? 'magicBox' : 'overview', true);
 
-  // Interactive click on 巧虎 & 琪琪 to trigger enthusiastic wave & greeting
+  // Interactive click on 巧虎 & 琪琪 or 4 Restroom Badges
   const raycaster = new THREE.Raycaster();
   const mouseNdc = new THREE.Vector2();
   let downPos = {x:0, y:0};
   renderer.domElement.addEventListener('pointerdown', e => { downPos = {x:e.clientX, y:e.clientY}; });
   renderer.domElement.addEventListener('pointerup', e => {
     if(Math.hypot(e.clientX - downPos.x, e.clientY - downPos.y) > 6) return;
-    if(!cfg.mascot || !mascotSprite) return;
     mouseNdc.x = (e.clientX / window.innerWidth) * 2 - 1;
     mouseNdc.y = -(e.clientY / window.innerHeight) * 2 + 1;
     raycaster.setFromCamera(mouseNdc, camera);
+
+    if(cfg.wc && wcMarkers.length > 0){
+      const wcSprites = wcMarkers.map(m => m.badge);
+      const wcHits = raycaster.intersectObjects(wcSprites, false);
+      if(wcHits.length > 0 && wcHits[0].object.userData.toastDesc){
+        showToast(wcHits[0].object.userData.toastDesc);
+        return;
+      }
+    }
+
+    if(!cfg.mascot || !mascotSprite) return;
     const hits = raycaster.intersectObject(mascotSprite, false);
     if(hits.length > 0){
       mascotBoostTimer = 2.8;
@@ -1854,6 +2160,11 @@ function init(){
     cfg.signs = !cfg.signs;
     applyAllToggles();
     showToast(`貴賓四步路標：${cfg.signs ? '已開啟' : '已關閉'}`);
+  };
+  $('swWc').onclick = () => {
+    cfg.wc = !cfg.wc;
+    applyAllToggles();
+    showToast(`🚻 園區 4 處化妝室標示：${cfg.wc ? '已開啟' : '已關閉'}`);
   };
   $('swBeacon').onclick = () => {
     cfg.beacon = !cfg.beacon;
