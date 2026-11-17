@@ -323,13 +323,23 @@
             filter: drop-shadow(0 2.5px 0 #6d2e14);
         }
         .cover-date-pill {
-            font-size: 0.78rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            font-size: clamp(0.73rem, 3.0vw, 0.80rem);
             font-weight: 800;
+            line-height: 1.35;
+            text-align: center;
             color: #14532d;
             background: #dcfce7;
             border: 1px solid #86efac;
-            padding: 3px 12px;
-            border-radius: 999px;
+            padding: 5px 16px;
+            border-radius: 14px;
+        }
+        .cover-date-pill span {
+            white-space: nowrap;
         }
         .cover-enter-btn {
             margin-top: 4px;
@@ -1237,7 +1247,10 @@
             <div class="cover-plaque">
                 <div class="cover-plaque-sub">🏆 總決賽 ・ 誠摯邀請您蒞臨指導</div>
                 <div class="cover-main-label">電子邀請卡</div>
-                <div class="cover-date-pill">115 年 11 月 29 日 (日) 10:30 ｜ 松山文創園區 2F</div>
+                <div class="cover-date-pill">
+                    <span>115 年 11 月 29 日 (日) 10:30</span>
+                    <span>松山文創園區 2F</span>
+                </div>
                 <div class="cover-enter-btn">
                     <span>✨ 點擊開啟邀請卡</span>
                     <span>➜</span>
